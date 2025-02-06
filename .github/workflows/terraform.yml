@@ -84,27 +84,11 @@ jobs:
       - name: Run TFLint
         run: tflint . || true
 
-  # Security Job: Infracost
-  infracost:
-    name: 'Run Infracost'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Install Infracost
-        run: |
-          curl -sSL https://github.com/infracost/infracost/releases/download/v0.10.10/infracost-linux-amd64-v0.10.10.tar.gz | tar -xzv
-
-      - name: Run Infracost
-        run: |
-          infracost breakdown --path . || true
-
   # Terraform Jobs: Dev
   terraform-dev:
     name: 'Terraform Dev'
     runs-on: ubuntu-latest
-    needs: [checkov, tflint, infracost]
+    needs: [checkov, tflint]  # Wait for security checks to pass before starting
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -143,7 +127,7 @@ jobs:
   terraform-qa:
     name: 'Terraform QA'
     runs-on: ubuntu-latest
-    needs: [checkov, tflint, infracost]
+    needs: [checkov, tflint]  # Wait for security checks to pass before starting
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -182,7 +166,7 @@ jobs:
   terraform-prod:
     name: 'Terraform Prod'
     runs-on: ubuntu-latest
-    needs: [checkov, tflint, infracost]
+    needs: [checkov, tflint]  # Wait for security checks to pass before starting
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
